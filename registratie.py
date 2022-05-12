@@ -1,4 +1,4 @@
-import tkinter, re, yaml, random, json, os.path, os
+import tkinter, re, yaml, random, json, os.path, os, time
 from tkinter import messagebox
 from date import datum
 
@@ -93,6 +93,18 @@ def error(text):
     pass
 
 def save():
+    t = time.localtime()
+    current_time = time.strftime("%H:%M:%S %d/%m/%Y", t)
+    arr = os.listdir(path + "/databron")
+    if len(arr) == 0:
+        arr.append("0")
+    new_arr = []
+    for x in arr:
+        try:
+            new_arr.append(int(x.removesuffix(".json")))
+        except:
+            pass
+    num = new_arr[-1] + 1
     if os.path.exists(path + "/databron") == False:
         os.mkdir(path + "/databron")
     with open(path + '/preset.yml', 'r') as file:
@@ -103,10 +115,16 @@ def save():
     preset["telefoon"] = number
     preset["geboortedag"] = birthday
     preset["token"] = token
+    preset["aanmaak"] = current_time
     info = json.dumps(preset, indent=2)
-    with open(path + '/databron/' + str(token) + ".json", 'x') as file:
+    with open(path + '/databron/' + str(num) + ".json", 'x') as file:
         file.write(info)
-
+    data = {num : {
+        "naam" : str(num) + ".json",
+        "aanmaak" : current_time
+    }}
+    with open(path + '/databron/data.yml', 'a') as file:
+        documents = yaml.dump(data, file)
     
 
 
